@@ -1,42 +1,46 @@
-;;; We want to reteurn a function that takes the last generated string and concatenates it inside of the next generated string
-;;; This allows us to return (fn [gen-string] (str "<" *tag-name* ">" gen-string "</" *tag-name* ">"))
-;;; which is then called on whatever goes inside 
+;; HTLL uses the clojure/edn functions to generate an s-expression tree from the input "lisp", which is then recursively parsed to html
+;; 
 
 (ns htll.core
   (:gen-class)
   (:require
    (clojure.edn)))
 
-; TODO: we forgot to handle persistent-lists lol
-; TODO: This should just do the reduce itself so we can use recur and avoid a stack overflow 
-;;;; The Main loop - reduce and switch
+;;; The Main Loop - reduce and switch
 ;; Because clojure.edn will parse the subset of clojure we need to transpile to html to an s-expression,
-;; We can treat going from htll to html as recursively walking a list.
-;; I chose to re-implement reduce-like functionallity myself in order to afford more control over when and how we recurse.
+;; We can treat going from htll to html as walking a tree of s-expressions and translating them to html
+;; For Lists, we want to take the first argument and treat it as a function where 
+;; the head of the list encloses the html representation of the rest of the list with a beginning and end tag
 (defn node->string
-  ;; The function is multi-arrity so that the callee has a better api
-  ([node] ((node->string node "")))
-  ;; This is the actual meat of the function, where we recursively walk the s-expression and convert it to html
-  ([node ^String string]
+  "Takes an s-expression or s-expression node and generates an html representation of it"
+  ([node] (node->string "" node))
+  ([^String current-string node]
+   (println node)
+   (println current-string)
+   ;; We want to switch on the class of the node, as each different class generates a different part of the html
    (let [node-class (class node)]
-     ;; We generate html from the node differently based on what class it is, 
      (cond
-       ;; If it's nill that means we've reached the end of this branch, so we just return the generated string and let the function above us deal with it
-       (= node-class nil) (fn [gen-string] gen-string)
-       ;; We follow the same reasoning as nil if it's a string, except we need to add it at the end of the branch as well
-       (= node-class java.lang.String) (fn [gen-string] (str gen-string node))
-       ;;TODO: return a function
-       ;; if it's a symbol we want to generate a string equivalent to <*symbol*> *generated-text* </*symbol*> where *...* means to insert it into the string
-        ;; so we return a function that takes the string generated from that branch and inserts it in between "<*symbol*>..."
-       (= node-class clojure.lang.Symbol)
-       (let [node (str node)]
-         (fn [gen-string] (str "<" node ">" gen-string "</" node ">")))
-       ;TODO: figure this out
+       ;; If the node is nil we've reached the end of the branch, so we return what we've generated
+       (nil? node) current-string
+       ;; If the Node class  is a string we want to add it at the end of the current string
+       (= node-class java.lang.String) (str node current-string)
+       ;; If it's a list, we do one of two things depending on whether or not it starts with a symbol.
        (= node-class clojure.lang.PersistentList)
-       (let [tag (first node)])))))
+       (if (= (class (first node)) clojure.lang.Symbol)
+         ;; If it does, we need to surround the parsed html from the rest of the list with beginnig and end tags
+         (let [tag (str (first node))]
+           ; (println (str "found tag: " tag))
+           ; (println (rest node))
+           (str current-string
+                "<" tag ">"
+                (reduce node->string (rest node))
+                "</" tag ">"))
+         ;; If it doesn't, we throw an exception, as it's not formed correctly 
+         (str current-string (reduce node->string node)))
+       :else (throw (Exception. (str "encountered unexpected node-type: " node-class)))))))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Reads the file at the path of the first argument and converts it to html"
   [& args]
   (println
    (node->string
