@@ -8,7 +8,7 @@ I decided to write it all in a (semi-)literate style, so there are comments thro
 
 If I ever get motivated, you'll be able to do :onclick "alert('hi')" to get \<buton onclick="alert('hi')">, but that's a lot of complexity for something not even I'm ever going to use
 
-There's an example of htll at ./example-input.edn, and you can try it out with ``lein run -- example-input.edn``
+There's an example of htll at ./example-input.edn, and you can try it out with ``lein run -- example-input.edn # > example-output.html``
 
 ## License
 
