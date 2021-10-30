@@ -15,28 +15,27 @@
   "Takes an s-expression or s-expression node and generates an html representation of it"
   ([node] (node->string "" node))
   ([^String current-string node]
-   (println "Node:" node)
-   (println "Current String:" current-string)
    ;; We want to switch on the class of the node, as each different class generates a different part of the html
    (let [node-class (class node)]
      (cond
        ;; If the node is nil we've reached the end of the branch, so we return what we've generated
-       (nil? node) current-string
+       (nil? node)  current-string
        ;; If the Node class  is a string we want to add it at the end of the current string
-       (= node-class java.lang.String) (str node current-string)
+       (= node-class java.lang.String) (str current-string node)
        ;; If it's a list, we do one of two things depending on whether or not it starts with a symbol.
        (= node-class clojure.lang.PersistentList)
        (if (= (class (first node)) clojure.lang.Symbol)
-         ;; If it does, we need to surround the parsed html from the rest of the list with beginnig and end tags
-         (let [tag (str (first node))]
-           ; (println (str "found tag: " tag))
-           ; (println (rest node))
-           (str current-string
-                "<" tag ">"
-                (reduce node->string (rest node))
-                "</" tag ">"))
-         ;; If it doesn't, we throw an exception, as it's not formed correctly 
-         (str current-string (reduce node->string node)))
+         ;; If it does, we need to surround the parsed html from the rest of the list with begining and end tags
+         ;; We need to pass the empty string to reduce, because if we don't it uses the first value in the list instead,
+         ;; leading to us treating the tag as as part of the already-built string
+         ;; You could factor out the let, but I think that would make it less readable
+         (let [tag (first node)
+               body (reduce node->string "" (rest node))]
+           (str
+                current-string "<"tag">"body"</"tag">"))
+         ;; We should never reach this branch, because any symbol should have already been parsed out to a tag
+         (throw (Exception. "function has been passed a none-function function")))
+       ;; Any other classes are outside of the htll syntax
        :else (throw (Exception. (str "encountered unexpected node-type: " node-class)))))))
 
 (defn -main
@@ -45,5 +44,5 @@
   (println
    (node->string
     (clojure.edn/read-string
-     (slurp (or (first args) "example-input.edn"))))))
+     (slurp (first args))))))
 
