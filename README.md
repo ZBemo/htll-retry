@@ -6,6 +6,8 @@ an s-expression format that transpiles to html. Just think what this could do in
 
 I decided to write it all in a (semi-)literate style, so there are comments throughout ./src/htll/core.clj, which is the only file with actual code. It's all pretty simple, because clojure does the hard part for us.
 
+If I ever get motivated, you'll be able to do :onclick "alert('hi')" to get \<buton onclick="alert('hi')">, but that's a lot of complexity for something not even I'm ever going to use
+
 There's an example of htll at ./example-input.edn, and you can try it out with ``lein run -- example-input.edn``
 
 ## License

@@ -4,7 +4,8 @@
 (ns htll.core
   (:gen-class)
   (:require
-   (clojure.edn)))
+   (clojure.edn)
+   (clojure.string)))
 
 ;;; The Main Loop - reduce and switch
 ;; Because clojure.edn will parse the subset of clojure we need to transpile to html to an s-expression,
@@ -21,7 +22,8 @@
        ;; If the node is nil we've reached the end of the branch, so we return what we've generated
        (nil? node)  current-string
        ;; If the Node class  is a string we want to add it at the end of the current string
-       (= node-class java.lang.String) (str current-string node)
+       ;; We replace line breaks with <br> so that they actually show up as linebrakes
+       (= node-class java.lang.String) (str current-string (clojure.string/replace node #"\r?\n" "<br>"))
        ;; If it's a list, we do one of two things depending on whether or not it starts with a symbol.
        (= node-class clojure.lang.PersistentList)
        (if (= (class (first node)) clojure.lang.Symbol)
