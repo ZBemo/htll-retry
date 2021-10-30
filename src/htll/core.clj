@@ -15,8 +15,8 @@
   "Takes an s-expression or s-expression node and generates an html representation of it"
   ([node] (node->string "" node))
   ([^String current-string node]
-   (println node)
-   (println current-string)
+   (println "Node:" node)
+   (println "Current String:" current-string)
    ;; We want to switch on the class of the node, as each different class generates a different part of the html
    (let [node-class (class node)]
      (cond
