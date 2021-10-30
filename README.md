@@ -1,32 +1,10 @@
 # htll
 
-FIXME: description
+Have you ever looked at html and wished it was more lisp-y? have you ever looked at lisp and wished you could use it instead of the ubiquitous HTML? well then, this project is for you. To help myself learn clojure and better-understand functional programming I've decided to use clojure (and mainly its edn reader) to make HTLL, an s-expression format that transpiles to html. Just think what this could do in conjunction with clojurescript! 
 
 ## Installation
 
-Download from http://example.com/FIXME.
-
-## Usage
-
-FIXME: explanation
-
-    $ java -jar htll-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+Download from https://github.com/ZBemo/htll-retry and run ``lein run``, or take a read over the source code, or invoke clj directly on src/htll/core.clj
 
 ## License
 
