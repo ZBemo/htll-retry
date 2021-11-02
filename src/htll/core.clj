@@ -1,6 +1,4 @@
 ;; HTLL uses the clojure/edn functions to generate an s-expression tree from the input "lisp", which is then recursively parsed to html
-;; 
-
 (ns htll.core
   (:gen-class)
   (:require
@@ -34,7 +32,7 @@
          (let [tag (first node)
                body (reduce node->string "" (rest node))]
            (str
-                current-string "<"tag">"body"</"tag">"))
+            current-string "<" tag ">" body "</" tag ">"))
          ;; We should never reach this branch, because any symbol should have already been parsed out to a tag
          (throw (Exception. "function has been passed a none-function function")))
        ;; Any other classes are outside of the htll syntax
