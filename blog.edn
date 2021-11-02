@@ -1,0 +1,22 @@
+; "transpile" this to html; just run `./transpile.sh blog.edn > blog.html`
+
+(html
+ (head (title "A quick blog about hypertext-lisp-language"))
+ (body (h1 "What is HTLL?")
+       "One day I was browsing twitter, when I say a tweet along the lines of \"Why wasn't html a lisp?\""
+       "They had replied to that tweet, saying something like \"I'm sure that would be easy to implement, why doesn't anyone try it?\", So I decided to try it."
+       (i "In fact,") "I'm writing this blog as a lisp." (br)
+       "It'll then be translated into html, which your favorite web browser will interpret."
+       (h1 "How's it work?")
+       "Very slowly, but that's probably not what you wanted to hear. Clojure does most of the heavy lifting for us, translating the edn file into a list, which we then walk, generating html as we go." (br)
+       "Unless your computer is beastly, I wouldn't recommend actually writing a website with it, but it's a fun little proof of concept, and it helped me better understand clojure." (br)
+       "If I could do some things differently, I would put more planning into the function design, and try to figure out a way to make it tail call friendly." (br)
+       (h3 (b "Maybe something like this:"))
+       (ul
+        (li "Passing generator functions through recur - " (i "I tried that in one of the commits, but it got very complex. Maybe I could check the argument's class?"))
+        (li "Doing multiple levels of depth in one recursion - I'm not sure how exactly to do that, but I think it would be helpful")
+        (li "Using atomics - having a mutable data structure on hand" (b " might ") "make things easier"))
+       (h1 "Closing notes")
+       (ul
+        (li "I'm new to clojure, and functional programing. If you see anything obvious I'm missing please let me know")
+        (li "This isn't fully usable; Although it works for simple blogs like this, it's lagging a way to put text inside of tags, so you're severely limited in interactivity and scripting"))))
