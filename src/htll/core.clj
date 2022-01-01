@@ -30,7 +30,9 @@
          ;; leading to us treating the tag as as part of the already-built string
          ;; You could factor out the let, but I think that would make it less readable
          (let [tag (first node)
-               body (reduce node->string "" (rest node))]
+               body (reduce node->string ""
+                            (filter #(not (= (class %) clojure.lang.Keyword))
+                                    (rest node)))]
            (str
             current-string "<" tag ">" body "</" tag ">"))
          ;; We should never reach this branch, because any symbol should have already been parsed out to a tag
